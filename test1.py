@@ -11,7 +11,6 @@ PADDLE_WIDTH = 100
 PADDLE_HEIGHT = 10
 BALL_SIZE = 10
 NUM_BRICKS = 8
-NUM_ROW = 4
 
 # Инициализация Pygame
 pygame.init()
@@ -83,21 +82,12 @@ class Brick:
 # Создание объектов
 paddle = Paddle()
 ball = Ball()
-bricks = [Brick(x * (BRICK_WIDTH + 10) + 35, y * (BRICK_HEIGHT + 10) + 35) for x in range(NUM_BRICKS) for y in range(NUM_ROW)]
-
-# Счетчик пропущенных мячей
-missed_balls = 0
-
-# Шрифт для отображения текста
-font = pygame.font.SysFont(None, 36)
+bricks = [Brick(x * (BRICK_WIDTH + 10) + 35, y * (BRICK_HEIGHT + 10) + 35) for x in range(NUM_BRICKS) for y in range(3)]
 
 # Игровой цикл
 running = True
 freeze = False
-fin = False
 clock = pygame.time.Clock()
-bricks_out = 0
-num_shot = 0
 
 while running:
     screen.fill((0, 0, 0))
@@ -112,10 +102,7 @@ while running:
     if keys[pygame.K_RIGHT]:
         paddle.move("right")
     if keys[pygame.K_SPACE]:
-        if fin == True:
-            running = False
-        else:
-            freeze = False      # Продолжаем после промаха
+        freeze = False      # Продолжаем после промаха
 
     if freeze == True:
         ball.rect.x = paddle.rect.x + (PADDLE_WIDTH - BALL_SIZE) // 2
@@ -125,37 +112,22 @@ while running:
     # Проверка столкновений шара с платформой
     if ball.rect.colliderect(paddle.rect):
         ball.speed_y *= -1
-        num_shot += 1
 
     # Проверка столкновений шара с кирпичами
     for brick in bricks:
         if brick.alive and ball.rect.colliderect(brick.rect):
             ball.speed_y *= -1
             brick.alive = False
-            bricks_out += 1
-            if bricks_out == (NUM_BRICKS * NUM_ROW):
-                freeze = True
-                fin = True
-                ball.rect.y = SCREEN_HEIGHT - PADDLE_HEIGHT - 20
 
     # Проверка падения шара
     if ball.rect.bottom >= SCREEN_HEIGHT:
         ball.reset()
         freeze = True
-        missed_balls += 1
 
     paddle.draw(screen)
     ball.draw(screen)
     for brick in bricks:
         brick.draw(screen)
-
-    # Отображение счетчика пропущенных мячей
-    text = font.render(f"Пропущенные мячи: {missed_balls}                                      Число ударов: {num_shot}", True, (255, 255, 255))
-    screen.blit(text, (10, 10))
-
-    if fin == True:
-        text = font.render("ИГРА ОКОНЧЕНА", True, (0, 255, 255))
-        screen.blit(text, (300, 300))
 
     pygame.display.flip()
     clock.tick(60)
