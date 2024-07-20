@@ -3,20 +3,178 @@ import random
 
 # Константы
 SCREEN_WIDTH = 300
-SCREEN_HEIGHT = 600
+SCREEN_HEIGHT = 900
 GRID_SIZE = 30
 GRID_WIDTH = SCREEN_WIDTH // GRID_SIZE
 GRID_HEIGHT = SCREEN_HEIGHT // GRID_SIZE
 
 # Определение фигур Тетриса
 SHAPES = [
-    [[1, 1, 1, 1]],  # I
-    [[1, 1], [1, 1]],  # O
-    [[0, 1, 0], [1, 1, 1]],  # T
-    [[1, 0, 0], [1, 1, 1]],  # L
-    [[0, 0, 1], [1, 1, 1]],  # J
-    [[0, 1, 1], [1, 1, 0]],  # S
-    [[1, 1, 0], [0, 1, 1]]  # Z
+    # I
+    [
+        [
+            [0, 1, 0, 0],
+            [0, 1, 0, 0],
+            [0, 1, 0, 0],
+            [0, 1, 0, 0],
+        ],
+        [
+            [0, 0, 0, 0],
+            [1, 1, 1, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+        ],
+        [
+            [0, 1, 0, 0],
+            [0, 1, 0, 0],
+            [0, 1, 0, 0],
+            [0, 1, 0, 0],
+        ],
+        [
+            [0, 0, 0, 0],
+            [1, 1, 1, 1],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+        ]
+    ],
+    # O
+    [
+        [
+            [0, 0, 0],
+            [0, 1, 1],
+            [0, 1, 1]
+        ],
+        [
+            [0, 0, 0],
+            [0, 1, 1],
+            [0, 1, 1]
+        ],
+        [
+            [0, 0, 0],
+            [0, 1, 1],
+            [0, 1, 1]
+        ],
+        [
+            [0, 0, 0],
+            [0, 1, 1],
+            [0, 1, 1]
+        ]
+    ],
+    # T
+    [
+        [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 1, 0]
+        ],
+        [
+            [0, 1, 0],
+            [1, 1, 0],
+            [0, 1, 0]
+        ],
+        [
+            [0, 1, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ],
+        [
+            [0, 1, 0],
+            [0, 1, 1],
+            [0, 1, 0]
+        ]
+    ],
+    # L
+    [
+        [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 1, 1]
+        ],
+        [
+            [0, 0, 0],
+            [1, 1, 1],
+            [1, 0, 0]
+        ],
+        [
+            [1, 1, 0],
+            [0, 1, 0],
+            [0, 1, 0]
+        ],
+        [
+            [0, 0, 1],
+            [1, 1, 1],
+            [0, 0, 0]
+        ]
+    ],
+    # J
+    [
+        [
+            [0, 1, 0],
+            [0, 1, 0],
+            [1, 1, 0]
+        ],
+        [
+            [1, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
+        ],
+        [
+            [0, 1, 1],
+            [0, 1, 0],
+            [0, 1, 0]
+        ],
+        [
+            [0, 0, 0],
+            [1, 1, 1],
+            [0, 0, 1]
+        ]
+    ],
+    # S
+    [
+        [
+            [0, 0, 0],
+            [0, 1, 1],
+            [1, 1, 0]
+        ],
+        [
+            [1, 0, 0],
+            [1, 1, 0],
+            [0, 1, 0]
+        ],
+        [
+            [0, 0, 0],
+            [0, 1, 1],
+            [1, 1, 0]
+        ],
+        [
+            [1, 0, 0],
+            [1, 1, 0],
+            [0, 1, 0]
+        ]
+    ],
+    # Z
+    [
+        [
+            [0, 0, 0],
+            [1, 1, 0],
+            [0, 1, 1]
+        ],
+        [
+            [0, 1, 0],
+            [1, 1, 0],
+            [1, 0, 0]
+        ],
+        [
+            [0, 0, 0],
+            [1, 1, 0],
+            [0, 1, 1]
+        ],
+        [
+            [0, 1, 0],
+            [1, 1, 0],
+            [1, 0, 0]
+        ]
+    ]
 ]
 
 # Цвета фигур
@@ -42,7 +200,7 @@ class Piece:
         return self.shape[self.rotation]
 
     def rotate(self):
-        self.rotation = (self.rotation + 1) % len(self.shape)
+        self.rotation = (self.rotation + 1) % 4 #len(self.shape)
 
 class Tetris:
     def __init__(self):
@@ -61,7 +219,7 @@ class Tetris:
 
     def check_collision(self, piece):
         image = piece.image()
-        print("Image: ", image)  # Отладочный вывод
+    #    print("Image: ", image)  # Отладочный вывод
         if not isinstance(image, list) or not all(isinstance(row, list) for row in image):
             raise ValueError("The image must be a list of lists")
 
@@ -126,6 +284,9 @@ class Tetris:
         pygame.init()
         screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         clock = pygame.time.Clock()
+        # Шрифт для отображения текста
+        font = pygame.font.SysFont(None, 36)
+
         while not self.gameover:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -144,11 +305,17 @@ class Tetris:
             screen.fill((0, 0, 0))
             self.draw_grid(screen)
             self.draw_piece(screen, self.current_piece)
+
+            text = font.render(f"Полных строк: {self.score} ", True, (255, 255, 255))
+            screen.blit(text, (10, 10))
+
             pygame.display.flip()
-            clock.tick(10 + self.level)
+       #     clock.tick(10 + self.level)
+            clock.tick(5 + self.level)
 
         pygame.quit()
 
 if __name__ == "__main__":
+
     game = Tetris()
     game.run()
