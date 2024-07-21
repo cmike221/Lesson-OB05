@@ -1,9 +1,10 @@
 import pygame
 import random
+import  time
 
 # Константы
 SCREEN_WIDTH = 300
-SCREEN_HEIGHT = 900
+SCREEN_HEIGHT = 1000
 GRID_SIZE = 30
 GRID_WIDTH = SCREEN_WIDTH // GRID_SIZE
 GRID_HEIGHT = SCREEN_HEIGHT // GRID_SIZE
@@ -20,7 +21,7 @@ SHAPES = [
         ],
         [
             [0, 0, 0, 0],
-            [1, 1, 1, 0],
+            [1, 1, 1, 1],
             [0, 0, 0, 0],
             [0, 0, 0, 0],
         ],
@@ -210,12 +211,13 @@ class Tetris:
         self.gameover = False
         self.current_piece = Piece(GRID_WIDTH // 2, 0)
         self.next_piece = Piece(GRID_WIDTH // 2, 0)
+        self.finish = False
 
     def new_piece(self):
         self.current_piece = self.next_piece
         self.next_piece = Piece(GRID_WIDTH // 2, 0)
         if self.check_collision(self.current_piece):
-            self.gameover = True
+            self.finish = True #self.gameover = True
 
     def check_collision(self, piece):
         image = piece.image()
@@ -250,6 +252,7 @@ class Tetris:
                 del self.board[y]
                 self.board.insert(0, [(0, 0, 0) for _ in range(GRID_WIDTH)])
         self.score += lines ** 2
+    #    self.level += 1  # Каждая строка увеличивает скорость
 
     def move(self, dx):
         self.current_piece.x += dx
@@ -283,6 +286,7 @@ class Tetris:
     def run(self):
         pygame.init()
         screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        pygame.display.set_caption("Тетрис")
         clock = pygame.time.Clock()
         # Шрифт для отображения текста
         font = pygame.font.SysFont(None, 36)
@@ -306,13 +310,19 @@ class Tetris:
             self.draw_grid(screen)
             self.draw_piece(screen, self.current_piece)
 
-            text = font.render(f"Полных строк: {self.score} ", True, (255, 255, 255))
+            if self.finish:
+                text = font.render(f"Это конец, счет: {self.score} ", True, (255, 0, 0))
+                self.gameover = True
+            else:
+                text = font.render(f"Счет: {self.score} ", True, (255, 255, 255))
             screen.blit(text, (10, 10))
 
             pygame.display.flip()
        #     clock.tick(10 + self.level)
-            clock.tick(5 + self.level)
+            clock.tick(3 + self.level + self.score // 5) # Нечего долго играться!
 
+        if self.finish:
+            time.sleep(10)
         pygame.quit()
 
 if __name__ == "__main__":
