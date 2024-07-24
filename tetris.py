@@ -319,7 +319,10 @@ class Tetris:
 
             pygame.display.flip()
        #     clock.tick(10 + self.level)
-            clock.tick(3 + self.level + self.score // 5) # Нечего долго играться!
+            if self.score < 30:
+                clock.tick(3 + self.level + self.score // 5) # Нечего долго играться!
+            else:
+                clock.tick(8 + self.level) # Limit speed
 
         if self.finish:
             time.sleep(10)
